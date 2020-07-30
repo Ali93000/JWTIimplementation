@@ -15,6 +15,7 @@ namespace JWTIimplementation.Controllers
         {
             if (username == "admin" && userPassword == "admin")
             {
+                // Generate Token After Successfuly Login 
                 var generateToken = TokenManager.GenerateToken(username);
                 return Ok(generateToken);
             }

@@ -16,20 +16,24 @@ namespace JWTIimplementation.Security
             byte[] key = Convert.FromBase64String(Secret);
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(key);
 
+            Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+            keyValuePairs.Add("id", "1");
+            keyValuePairs.Add("role", "manager12");
+            keyValuePairs.Add("Compcode", "1");
+            keyValuePairs.Add("Bracode", "1");
+
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
             {
                 // Add Custom Claims
+                Claims = keyValuePairs,
                 Subject = new ClaimsIdentity(new[] {
                       new Claim(ClaimTypes.Name, username),
-                      new Claim("id", "1"),
-                      new Claim("role" , "manager"),
-                      new Claim("Compcode", "1"),
-                      new Claim("Bracode", "1")
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(securityKey,
                 SecurityAlgorithms.HmacSha256Signature)
             };
+           
 
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
             JwtSecurityToken token = handler.CreateJwtSecurityToken(descriptor);
@@ -86,5 +90,23 @@ namespace JWTIimplementation.Security
             username = usernameClaim.Value;
             return username;
         }
+
+        public static void ReadToken(string jwtToken)
+        {
+            // To Read Claims on Api Controller
+
+            //var jwt = Request.Headers.Authorization.Parameter;
+
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            System.IdentityModel.Tokens.Jwt.JwtSecurityToken token = handler.ReadJwtToken(jwtToken);
+            
+            IEnumerable<Claim> claims = token.Claims.ToList();
+
+            string id = token.Claims.FirstOrDefault(x => x.Type == "id").Value;
+            string role = token.Claims.FirstOrDefault(x => x.Type == "role").Value;
+            string Compcode = token.Claims.FirstOrDefault(x => x.Type == "Compcode").Value;
+            string Bracode = token.Claims.FirstOrDefault(x => x.Type == "Bracode").Value;
+        }
     }
+
 }
